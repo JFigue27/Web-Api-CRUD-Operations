@@ -34,10 +34,58 @@ namespace TodoApi.Controllers
 
         // GET: api/Employee/1
         [HttpGet("{id}")]
-        public async Task<ActionResult<IEnumerable<Employee>>> GetEmployee()
+        public async Task<ActionResult<Employee>> GetEmployee(int id)
         {
-            return await _context.Employees.ToListAsync();
+            var employee = await _context.Employees.FindAsync(id);
+            if (employee == null)
+            {
+                return NotFound();
+            }
+            return employee;
         }
+
+        //POST: api/Employee
+        [HttpPost]
+        public async Task<ActionResult<Employee>> PostEmployee(Employee employee)
+        {
+            _context.Employees.Add(employee);
+            await _context.SaveChangesAsync();
+            return CreatedAtAction("GetEmployee", new {id = employee.id}, employee);
+        }
+
+        //PUT: api/Employee/1
+        [HttpPut("{id}")]
+
+        public async Task<IActionResult> PutEmployee(int id, Employee employee)
+        {
+            if (id != employee.id)
+            {
+                return BadRequest();
+            }
+
+            _context.Entry(employee).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        //DELETE: api/Employee/1
+        [HttpDelete("{id}")]
+
+        public async Task<ActionResult<Employee>> DeleteEmployee(int id)
+        {
+            var employee = await _context.Employees.FindAsync(id);
+            if (employee == null)
+            {
+                return NotFound();
+            }
+
+            _context.Employees.Remove(employee);
+            await _context.SaveChangesAsync();
+
+            return employee;
+        }
+
     }
 
 }
